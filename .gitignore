@@ -2,6 +2,7 @@
 cache/
 forge-cache/
 out/
+broadcast/
 
 # Ignores development broadcast logs
 !/broadcast

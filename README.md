@@ -39,5 +39,5 @@ $ anvil
 ### Deploy
 
 ```shell
-$ forge script script/Deploy.s.sol:Deploy --rpc-url <rpc_url> --broadcast --chain <chain_id> --json --verify --etherscan-api-key=<etherscan_api_key> -vvvvv  
+$ forge script script/Deploy.s.sol:Deploy --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast --chain $CHAIN_ID --json --verify --etherscan-api-key $ETHERSCAN_API_KEY -vvvvv
 ```
