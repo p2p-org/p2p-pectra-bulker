@@ -1,5 +1,6 @@
 # Compiler files
 cache/
+forge-cache/
 out/
 
 # Ignores development broadcast logs
@@ -12,3 +13,6 @@ docs/
 
 # Dotenv file
 .env
+
+# Deploy
+deploy.sh
