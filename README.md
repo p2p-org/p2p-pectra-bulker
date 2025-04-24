@@ -1,4 +1,4 @@
-## p2p-pectra-bulk
+## p2p-pectra-bulker
 Contract for bulk pectra operations: consolidation, partial withdrawal
 
 ## Usage
