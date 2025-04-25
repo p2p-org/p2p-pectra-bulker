@@ -22,8 +22,6 @@ contract HoodiTest is BaseTest {
         vm.startPrank(deployer);
         p2pPectraBulker = new P2PPectraBulker();
 
-        deal(address(p2pPectraBulker), 10 ether);
-
         vm.stopPrank();
     }
 }

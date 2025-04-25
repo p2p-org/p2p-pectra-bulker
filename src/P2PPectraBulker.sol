@@ -51,7 +51,7 @@ contract P2PPectraBulker {
             require(sourcePubkeyList[i].length == 48, P2PPectraBulker__InvalidPubkeyLength("sourcePubkey", sourcePubkeyList[i]));
 
             bytes memory callData = abi.encodePacked(sourcePubkeyList[i], targetPubkey);
-            (bool writeOK,) = ConsolidationContract.call{value: totalFee}(callData);
+            (bool writeOK,) = ConsolidationContract.call{value: consolidationFee + FEE_GAP}(callData);
             require(writeOK, P2PPectraBulker__CallingConsolidationRequestFailed());
         }
 
@@ -84,7 +84,7 @@ contract P2PPectraBulker {
         for (uint256 i = 0; i < withdrawals.length; i++) {
             require(withdrawals[i].pubkey.length == 48, P2PPectraBulker__InvalidPubkeyLength("pubkey", withdrawals[i].pubkey));
             bytes memory callData = abi.encodePacked(withdrawals[i].pubkey, withdrawals[i].amount);
-            (bool writeOK,) = PartialWithdrawalContract.call{value: totalFee}(callData);
+            (bool writeOK,) = PartialWithdrawalContract.call{value: partialWithdrawalFee + FEE_GAP}(callData);
             require(writeOK, P2PPectraBulker__CallingPartialWithdrawalRequestFailed());
         }
 
