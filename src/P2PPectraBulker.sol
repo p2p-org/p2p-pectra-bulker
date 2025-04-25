@@ -25,7 +25,7 @@ contract P2PPectraBulker {
         require(sourcePubkey.length == 48, P2PPectraBulker__InvalidPubkeyLength("sourcePubkey", sourcePubkey));
         require(targetPubkey.length == 48, P2PPectraBulker__InvalidPubkeyLength("targetPubkey", targetPubkey));
 
-        uint256 fee = _getFee();
+        uint256 fee = getConsolidationFee();
 
         bytes memory callData = abi.encodePacked(sourcePubkey, targetPubkey);
         (bool writeOK,) = ConsolidationContract.call{value: fee + FEE_GAP}(callData);
@@ -38,7 +38,7 @@ contract P2PPectraBulker {
         require(targetPubkey.length == 48, P2PPectraBulker__InvalidPubkeyLength("targetPubkey", targetPubkey));
         require(sourcePubkeyList.length > 0, P2PPectraBulker__SourcePubkeyListIsEmpty());
 
-        uint256 fee = _getFee();
+        uint256 fee = getConsolidationFee();
 
         for (uint256 i = 0; i < sourcePubkeyList.length; i++) {
             require(sourcePubkeyList[i].length == 48, P2PPectraBulker__InvalidPubkeyLength("sourcePubkey", sourcePubkeyList[i]));
@@ -54,7 +54,7 @@ contract P2PPectraBulker {
     function partialWithdraw(bytes calldata pubkey, uint64 amount) external payable {
         require(pubkey.length == 48, P2PPectraBulker__InvalidPubkeyLength("pubkey", pubkey));
 
-        uint256 fee = _getFee();
+        uint256 fee = getPartialWithdrawalFee();
 
         bytes memory callData = abi.encodePacked(pubkey, amount);
         (bool writeOK,) = PartialWithdrawalContract.call{value: fee + FEE_GAP}(callData);
@@ -66,7 +66,7 @@ contract P2PPectraBulker {
     function bulkPartialWithdaw(PartialWithdrawal[] calldata withdrawals) external payable {
         require(withdrawals.length > 0, P2PPectraBulker__WithdrawalListIsEmpty());
 
-        uint256 fee = _getFee();
+        uint256 fee = getPartialWithdrawalFee();
 
         for (uint256 i = 0; i < withdrawals.length; i++) {
             require(withdrawals[i].pubkey.length == 48, P2PPectraBulker__InvalidPubkeyLength("pubkey", withdrawals[i].pubkey));
@@ -78,7 +78,13 @@ contract P2PPectraBulker {
         _refund();
     }
 
-    function _getFee() private view returns (uint256 fee) {
+    function getConsolidationFee() public view returns (uint256 fee) {
+        (bool ok, bytes memory feeData) = ConsolidationContract.staticcall('');
+        require(ok, P2PPectraBulker__ReadingFeeFailed());
+        fee = uint256(bytes32(feeData));
+    }
+
+    function getPartialWithdrawalFee() public view returns (uint256 fee) {
         (bool ok, bytes memory feeData) = PartialWithdrawalContract.staticcall('');
         require(ok, P2PPectraBulker__ReadingFeeFailed());
         fee = uint256(bytes32(feeData));
