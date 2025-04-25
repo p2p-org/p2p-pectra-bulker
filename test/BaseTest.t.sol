@@ -22,11 +22,11 @@ abstract contract BaseTest is Test {
         vm.stopPrank();
     }
 
-    function test_ConsolidateValidators__CallingRequestFailed() public {
+    function test_ConsolidateValidators__ZeroMessageValue() public {
         vm.startPrank(client);
-    
-        vm.expectRevert(P2PPectraBulker__CallingConsolidationRequestFailed.selector);
-        p2pPectraBulker.consolidateValidators(sourcePubkey, targetPubkey);
+
+        vm.expectRevert(P2PPectraBulker__TooSmallMessageValue.selector);
+        p2pPectraBulker.consolidateValidators{value: 0 ether}(sourcePubkey, targetPubkey);
 
         vm.stopPrank();
     }
@@ -34,12 +34,17 @@ abstract contract BaseTest is Test {
     function test_ConsolidateValidators__CheckingBalanceRefund() public {
         vm.startPrank(client);
 
+        deal(address(p2pPectraBulker), 10 ether);
+
         uint256 balanceBefore = client.balance;
+        assertEq(address(p2pPectraBulker).balance, 10 ether);
+
         p2pPectraBulker.consolidateValidators{value: 1 ether}(sourcePubkey, targetPubkey);
         uint256 balanceAfter = client.balance;
 
         assertEq(balanceBefore - balanceAfter, 3);
-
+        assertEq(address(p2pPectraBulker).balance, 10 ether);
+    
         vm.stopPrank();
     }
 
@@ -83,11 +88,11 @@ abstract contract BaseTest is Test {
         vm.stopPrank();
     }
 
-    function test_BulkConsolidateValidators__CallingRequestFailed() public {
+    function test_BulkConsolidateValidators__ZeroMessageValue() public {
         vm.startPrank(client);
     
-        vm.expectRevert(P2PPectraBulker__CallingConsolidationRequestFailed.selector);
-        p2pPectraBulker.bulkConsolidateValidators(sourcePubkeyList, targetPubkey);
+        vm.expectRevert(P2PPectraBulker__TooSmallMessageValue.selector);
+        p2pPectraBulker.bulkConsolidateValidators{value: 0 ether}(sourcePubkeyList, targetPubkey);
 
         vm.stopPrank();
     }
@@ -95,11 +100,17 @@ abstract contract BaseTest is Test {
     function test_BulkConsolidateValidators__CheckingBalanceRefund() public {
         vm.startPrank(client);
 
+        deal(address(p2pPectraBulker), 10 ether);
+
         uint256 balanceBefore = client.balance;
+
+        assertEq(address(p2pPectraBulker).balance, 10 ether);
+
         p2pPectraBulker.bulkConsolidateValidators{value: 1 ether}(sourcePubkeyList, targetPubkey);
         uint256 balanceAfter = client.balance;
 
         assertEq(balanceBefore - balanceAfter, 9);
+        assertEq(address(p2pPectraBulker).balance, 10 ether);
 
         vm.stopPrank();
     }
@@ -160,11 +171,11 @@ abstract contract BaseTest is Test {
         vm.stopPrank();
     }
 
-    function test_PartialWithdraw__CallingRequestFailed() public {
+    function test_PartialWithdraw__ZeroMessageValue() public {
         vm.startPrank(client);
     
-        vm.expectRevert(P2PPectraBulker__CallingPartialWithdrawalRequestFailed.selector);
-        p2pPectraBulker.partialWithdraw(targetPubkey, 1);
+        vm.expectRevert(P2PPectraBulker__TooSmallMessageValue.selector);
+        p2pPectraBulker.partialWithdraw{value: 0}(targetPubkey, 1);
 
         vm.stopPrank();
     }
@@ -172,11 +183,17 @@ abstract contract BaseTest is Test {
     function test_PartialWithdraw__CheckingBalanceRefund() public {
         vm.startPrank(client);
 
+        deal(address(p2pPectraBulker), 10 ether);
+
         uint256 balanceBefore = client.balance;
+
+        assertEq(address(p2pPectraBulker).balance, 10 ether);
+
         p2pPectraBulker.partialWithdraw{value: 1 ether}(targetPubkey, 1);
         uint256 balanceAfter = client.balance;
 
         assertEq(balanceBefore - balanceAfter, 3);
+        assertEq(address(p2pPectraBulker).balance, 10 ether);
 
         vm.stopPrank();
     }
@@ -210,7 +227,7 @@ abstract contract BaseTest is Test {
         vm.stopPrank();
     }
 
-    function test_BulkPartialWithdraw__CallingRequestFailed() public {
+    function test_BulkPartialWithdraw__ZeroMessageValue() public {
         vm.startPrank(client);
 
         P2PPectraBulker.PartialWithdrawal[] memory withdrawals = new P2PPectraBulker.PartialWithdrawal[](3);
@@ -218,8 +235,8 @@ abstract contract BaseTest is Test {
         withdrawals[1] = P2PPectraBulker.PartialWithdrawal(sourcePubkey, 1);
         withdrawals[2] = P2PPectraBulker.PartialWithdrawal(sourcePubkey, 1);
     
-        vm.expectRevert(P2PPectraBulker__CallingPartialWithdrawalRequestFailed.selector);
-        p2pPectraBulker.bulkPartialWithdaw(withdrawals);
+        vm.expectRevert(P2PPectraBulker__TooSmallMessageValue.selector);
+        p2pPectraBulker.bulkPartialWithdaw{value: 0 ether}(withdrawals);
 
         vm.stopPrank();
     }
@@ -227,16 +244,21 @@ abstract contract BaseTest is Test {
     function test_BulkPartialWithdraw__CheckingBalanceRefund() public {
         vm.startPrank(client);
 
+        deal(address(p2pPectraBulker), 10 ether);
+
         P2PPectraBulker.PartialWithdrawal[] memory withdrawals = new P2PPectraBulker.PartialWithdrawal[](3);
         withdrawals[0] = P2PPectraBulker.PartialWithdrawal(sourcePubkey, 1);
         withdrawals[1] = P2PPectraBulker.PartialWithdrawal(sourcePubkey, 1);
         withdrawals[2] = P2PPectraBulker.PartialWithdrawal(sourcePubkey, 1);
 
         uint256 balanceBefore = client.balance;
+        assertEq(address(p2pPectraBulker).balance, 10 ether);
+
         p2pPectraBulker.bulkPartialWithdaw{value: 1 ether}(withdrawals);
         uint256 balanceAfter = client.balance;
 
         assertEq(balanceBefore - balanceAfter, 9);
+        assertEq(address(p2pPectraBulker).balance, 10 ether);
 
         vm.stopPrank();
     }
